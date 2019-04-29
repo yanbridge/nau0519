@@ -4,7 +4,7 @@ install.packages("quantmod")
 library(quantmod)
 par(family="STSong")
 getSymbols("JD",src="yahoo",from = "2014-05-22",
-            to = "2015-07-31")     # or to = Sys.Date(),  #  AAPL,GOOG,MSFT
+            to = "2018-07-31")     # or to = Sys.Date(),  #  AAPL,GOOG,MSFT
 candleChart(JD,multi.col=F,theme="white",TA=NULL) #TA=NULL  multi.col=F
 chartSeries(JD,theme="white",TA=NULL)
 chartSeries(GOOG,up.col='red',dn.col='green',theme="white",TA=NULL)
@@ -15,7 +15,7 @@ tsibm<-ts(IBM$IBM.Close)
 
 #没有成交量和调整后的价格（Adjusted）
 library(tseries)
-SANYI<-get.hist.quote(instrument='600031.ss',start='2012-01-01',end='2017-08-16')
+SANYI<-get.hist.quote(instrument='600031.ss',start='2015-01-01',end='2018-04-23')
 candleChart(SANYI,multi.col=TRUE,theme="white")
 chartSeries(SANYI,theme="white")
 
@@ -44,7 +44,7 @@ cor(rzj22)
 
 
 setSymbolLookup(万科=list(name="000002.sz",src="yahoo",from = "2015-11-01",
-            to = "2016-03-15"))  
+            to = "2018-03-15"))  
 getSymbols("万科")
 chartSeries(万科,u.col='red',dn.col='green',theme="white")
 
