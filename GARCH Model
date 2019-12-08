@@ -1,0 +1,63 @@
+library(rugarch)
+data(sp500ret)
+
+### GARCH模型, arma(1,1)-GARCH(1,1)##
+spec = ugarchspec()
+fit = ugarchfit(spec = spec, data = sp500ret)
+show(fit)
+plot(fit)
+###提取参数
+omega=coef(fit)[“omega”]   #coef(fit)[4],4为参数的顺序
+
+### GARCH模型, arma(0,0)-GARCH(1,1)#
+spec2 = ugarchspec(variance.model=list(model="iGARCH", garchOrder=c(1,1)), mean.model=list(armaOrder=c(0,0)))
+fit2 = ugarchfit(spec = spec2, data = sp500ret)
+show(fit2)
+
+### IGARCH模型
+my_spec <- ugarchspec(variance.model = list(model = "fGARCH”, 
+                     garchOrder = c(1, 1), submodel = "GARCH”, 
+                     external.regressors = NULL,
+                     variance.targeting = FALSE),
+                     mean.model = list(armaOrder = c(0, 0), 
+                     include.mean = TRUE, archm = FALSE,archpow = 1, 
+                     arfima = FALSE, external.regressors = NULL, 
+                     archex = FALSE), distribution.model = "norm")
+
+my.fit <- ugarchfit(sp500ret, spec = my_spec)
+show(my.fit)
+
+
+########
+library(rugarch)
+spec = ugarchspec(mean.model = list(armaOrder = c(1,0)),
+      variance.model = list(garchOrder = c(1,1),
+      model = "sGARCH"), distribution.model = "norm")    #distribution:snorm,std,sstd,ged,sged,nig,ghyp,sju
+#model = eGARCH,fGARCH,gjrGARCH,apARCH,iGARCH and csGARCH
+#if model = "fGARCH", then submodel can change to TGARCH, AVGARCH, #NGARCH,APARCH,GJRGARCH and ALLGARCH  
+fit <- ugarchfit(data = return, spec = spec)
+show(fit)
+ 
+
+##利用fGarch包，建立GARCH类模型
+library(fGarch)fit.1<-garchFit(~garch(1,1),data=xx,trace=FALSE)   #GARCH(1,1),norm
+fit.2<-garchFit(~garch(2,1),data=xx,trace=FALSE)   
+#GARCH(1,2),norm
+fit.3<-garchFit(~garch(1,1),data=xx,cond.dist='std',trace=FALSE)   #GARCH(1,1),std
+fit.4<-garchFit(~garch(1,1),data=xx,cond.dist='sstd',trace=FALSE)   #GARCH(1,1),sstd
+fit.5<-garchFit(~garch(1,1),data=xx,cond.dist='ged',trace=FALSE)   #GARCH(1,1),ged
+fit.6<-garchFit(~garch(1,1),data=xx,cond.dist='sged',trace=FALSE)   #GARCH(1,1),sged
+
+
+summary(fit.1)
+summary(fit.3)
+plot(fit.1)  #请键入相应数字获取信息
+##提取GARCH类模型信息
+vol.1<-fBasics::volatility(fit.1)   #提取GARCH(1,1)-N模型得到的波动率估计
+res.1<- residuals(fit.1,standardize=TRUE)  #提取GARCH模型得到标准化残差
+vol.1.ts<-ts(vol.1,frequency=12,start=c(1990,1))
+res.1.ts<-ts(res.1,frequency=12,start=c(1990,1))
+
+par(mfcol=c(2,1))
+plot(vol_1.ts, xlab='年', ylab='波动率')
+plot(sres_1.ts, xlab='年', ylab='标准化残差')
