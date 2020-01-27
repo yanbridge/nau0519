@@ -100,16 +100,3 @@ m <- cbind(Ad(get("AAPL", env = new.environment)), Ad(get("ORCL", env = new.envi
 library(psych)
 corr.test(as.data.frame(m))
 
-
-
-
-
-
-
-
-
-
-
-
-
-
