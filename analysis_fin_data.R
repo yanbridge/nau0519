@@ -5,7 +5,7 @@ library(TTR)
 library(tseries)
 
 ## 用quantmod包导入数据
-getSymbols("AAPL",from = "2017-01-01",to = Sys.Date(),src = "yahoo")
+getSymbols("AAPL",from = "2007-01-01",to = Sys.Date(),src = "yahoo")
 head(AAPL)
 
 ## 用tseries包导入数据  quote = c("Open", "High", "Low", "Close")
