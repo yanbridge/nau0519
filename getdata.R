@@ -276,9 +276,6 @@ setSymbolLookup(GL=list(name="000651.sz",src="yahoo",from = "2015-01-01",
                         to = Sys.time()))     ## 格力电器
 getSymbols("GL")
 
-setSymbolLookup(GL=list(name="000651.sz",src="yahoo",from = "2015-01-01",
-                        to = Sys.time()))     ## 格力电器
-getSymbols("GL")
 
 # 计算7只股票收益率
 ZS_ret <- dailyReturn(ZS)
@@ -290,7 +287,7 @@ XF_ret <- dailyReturn(XF)
 GL_ret <- dailyReturn(GL)
 
 data.ret <- merge(ZS_ret,ZX_ret,PA_ret,MT_ret,HR_ret,XF_ret,GL_ret)
-colnames(data_ret)<-c("ZS","ZX","PA","MT","HR","XF","GL")
+colnames(data.ret)<-c("ZS","ZX","PA","MT","HR","XF","GL")
 data.ret<-as.timeSeries(data.ret)
 frontier_ch<-portfolioFrontier(data.ret)
 frontier_ch
