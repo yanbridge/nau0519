@@ -198,7 +198,6 @@ library(quantmod)
 library(timeSeries)   # 如果没有安装，请 run:  install.packages("timeSeries")
 library(fPortfolio)   # 如果没有安装，请 run:  install.packages("fPortfolio")
  
-
 getSymbols("^GSPC",from="2015-01-01")
 getSymbols("AAPL",from="2015-01-01")
 
@@ -265,7 +264,6 @@ setSymbolLookup(GL=list(name="000651.sz",src="yahoo",from = "2015-01-01",
                         to = Sys.time()))     ## 格力电器
 getSymbols("GL")
 
-
 # 计算7只股票收益率
 ZS_ret <- dailyReturn(ZS)
 ZX_ret <- dailyReturn(ZX)
@@ -306,7 +304,6 @@ frontier_ch2<-portfolioFrontier(data.ret2)
 frontier_ch2
 plot(frontier_ch2)
 
-
 ## 再调整一次
 cbind(mean_ret,sd_ret)  # 去掉格力电器
 
@@ -316,4 +313,3 @@ data.ret3<-as.timeSeries(data.ret3)
 frontier_ch3<-portfolioFrontier(data.ret3)
 frontier_ch3
 plot(frontier_ch3)
-
