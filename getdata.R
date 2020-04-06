@@ -1,138 +1,250 @@
+rm(list=ls())            #åˆ é™¤å½“å‰ç¯å¢ƒä¸­çš„å˜é‡å’Œæ•°æ®
+
 #Download data from Yahoo!Finance
-install.packages("quantmod")
+getwd()                  #è·å–å½“å‰å·¥ä½œè·¯å¾„
+setwd("D:/Rdata")        #æ”¹å˜å·¥ä½œè·¯å¾„è‡³Dç›˜çš„Rdataæ–‡ä»¶å¤¹
+
+
+#########  3æœˆ28æ—¥æ•™å­¦ #################
+#Download data from Yahoo!Finance
+install.packages("quantmod")     #  å¦‚æœæœªå®‰è£…è¿‡æ­¤ç¨‹åºåŒ…,è¯·è¿è¡Œæ­¤å‘½ä»¤
+
+library(quantmod)               # å¯¼å…¥quantmodç¨‹åºåŒ…
+
+
+getSymbols("JD",src="yahoo",from = "2014-05-22",
+           to = Sys.Date())     # or to = Sys.Date(),  #  AAPL,GOOG,MSFT
+
+head(JD)
+tail(JD)
+
+JD2014<- JD["2014"]            # æå–äº¬ä¸œ2014å¹´è‚¡ç¥¨äº¤æ˜“æ•°æ®
+JD1819<- JD["2018::2019"]      # æå–äº¬ä¸œ2018-2019å¹´è‚¡ç¥¨äº¤æ˜“æ•°æ®
+
+chartSeries(JD,theme="white",TA=NULL)   # é»˜è®¤Kçº¿é£æ ¼ä¸ºæ¬§ç¾å¼
+chartSeries(JD,up.col='red',dn.col='green',
+            theme="white",TA=NULL,subset="2020")   #ç”»å‡ºäº¬ä¸œ2020å¹´ä»¥æ¥çš„ä¸­å›½å¼Kçº¿å›¾
+
+
+
+## ä¸‹è½½ä¸­å›½è‚¡ç¥¨æ•°æ®
+setSymbolLookup(æ‹›å•†é“¶è¡Œ=list(name="600036.ss",src="yahoo",from = "1990-01-01",
+                          to = Sys.Date()))  
+getSymbols("æ‹›å•†é“¶è¡Œ")
+chartSeries(æ‹›å•†é“¶è¡Œ,up.col='red',dn.col='green',theme="white") #ä¸­å›½å¼Kçº¿å›¾
+
+setSymbolLookup(SH=list(name="000001.ss",src="yahoo",from = "2000-01-01",
+                          to = Sys.Date()))  
+getSymbols("SH")
+chartSeries(WK,up.col='red',dn.col='green',theme="white") #ä¸­å›½å¼Kçº¿å›¾
+
+dreturn.sh <- dailyReturn(SH)
+chartSeries(dreturn.sh)
+
+######################### 3æœˆ31æ—¥ æ•™å­¦ ####################################
+library(quantmod)
+
+getSymbols("JD",src="yahoo",from = "2014-05-22",
+           to = Sys.Date())     # or to = Sys.Date(),  #  AAPL,GOOG,MSFT
+
+
+
+
+## æå–äº¬ä¸œçš„æ”¶ç›˜ä»·
+
+jdclose <- JD$JD.Close  # ç¬¬ä¸€ç§æ–¹æ³•
+jdclose1<- JD[,4]
+
+head(cbind(jdclose,jdclose1))
+tail(cbind(jdclose,jdclose1))
+
+chartSeries(jdclose)
+
+## è®¡ç®—äº¬ä¸œè‚¡ä»·æ—¥å†…æ³¢åŠ¨å¹…åº¦ï¼šæœ€é«˜ä»·-æœ€ä½ä»·
+jdvol <- JD$JD.High-JD$JD.Low
+chartSeries(jdvol)
+
+################# è®¡ç®—è‚¡ç¥¨æ”¶ç›Šç‡ ######################
+
+dreturn.jd <- dailyReturn(JD)
+
+dayreturn.jd <- diff(log(JD[,6]))
+
+par(mfrow=c(1,2))
+plot(dreturn.jd,col="blue")
+plot(dayreturn.jd,col="red")
+
+chartSeries(dreturn.jd,theme="white")
+
+### å¦‚ä½•è®¡ç®—å‘¨æ”¶ç›Šç‡,æœˆæ”¶ç›Šç‡,å­£åº¦æ”¶ç›Šç‡å’Œå¹´æ”¶ç›Šç‡ï¼Ÿ###
+wreturn <- weeklyReturn(JD)
+mreturn <- monthlyReturn(JD)
+qreturn <- quarterlyReturn(JD)
+yreturn <- yearlyReturn(JD)
+
+###############  ç»Ÿè®¡è‚¡ç¥¨æ”¶ç›Šç‡å°ç¨‹åº  ####################
+sumstats<-function(x,na.omit=FALSE){
+        if (na.omit)
+                x<-x[!is.na(x)]
+        m<-mean(x)
+        n<-length(x)
+        s<-sd(x)
+        max<-max(x)
+        min<-min(x)
+        skew<-sum((x-m)^3/s^3)/n
+        kurt<-sum((x-m)^4/s^4)/n-3
+        options(scipen=100)
+        return(c(obs=n,mean=m,stdev=s,max=max,min=min,skewness=skew,kurtosis=kurt))
+}
+############### æ˜¾ç¤ºç»Ÿè®¡æ•°æ® ##########################
+
+sumstats(dreturn.jd)
+
+#### ç”» Q-Q å›¾
+qqnorm(dreturn.jd,col="blue")
+qqline(dreturn.jd,col="red",lwd=3)
+
+### ç”»ç›´æ–¹å›¾åŠ æ­£æ€åˆ†å¸ƒçº¿
+hist(dreturn.jd)
+hist(dreturn.jd,probability = T,col="green",main = "äº¬ä¸œæ”¶ç›Šç‡ç›´æ–¹å›¾",ylim=c(0,24))
+
+lines(density(dreturn.jd),col="red",lwd=5)
+
+### æ·»åŠ æ­£æ€åˆ†å¸ƒ
+xfit<-seq(min(dreturn.jd),max(dreturn.jd),length=100)
+yfit<-dnorm(xfit,mean(dreturn.jd),sd(dreturn.jd))
+lines(xfit,yfit,col="blue",lwd=3,lty=2)
+
+
+## ä¿å­˜å¹¶å†æ¬¡è¯»å–,è½¬åŒ–ä¸ºxtsç±»å‹æ•°æ®
+write.csv(JD,file="jd.csv")
+write.csv(data.frame(JD),file="jd.csv")
+
+jd<-read.csv("jd.csv")
+jd<-xts(jd[,2:7],order.by = as.Date(jd[,1]))
+
+#é€šè¿‡tseriesç¨‹åºåŒ…ä¹Ÿå¯ä»¥ä¸‹è½½è‚¡ç¥¨æ•°æ®
+install.packages("tseries")
+
+library(tseries)
+ZSbank<-get.hist.quote(instrument="600036.ss",start="2001-01-01",end=Sys.Date(),
+                       quote=c("Open","High","Low","Close","Volume","Adjusted"))
+chartSeries(ZSbank,up.col="red",dn.col="green",theme="white")
+chartSeries(ZSbank,up.col="red",dn.col="green",theme="white",subset="2019")
+chartSeries(ZSbank,up.col="red",dn.col="green",theme="white",subset="2019::2020")
+chartSeries(ZSbank,up.col="red",dn.col="green",theme="white",subset="2019-06::2019-08")
+chartSeries(ZSbank,up.col="red",dn.col="green",theme="white",subset="2019-06-10::2019-08-20")
+
+## å¯ä»¥æ ¹æ®éœ€è¦,é€‰æ‹©ä¸‹è½½æ•°æ®,å¦‚åªéœ€è¦Close
+ZSbank1<-get.hist.quote(instrument="600036.ss",start="2012-01-01",end=Sys.Date(),
+                       quote="Adjusted")
+
+chartSeries(ZSbank1,up.col="red",dn.col="green",theme="white")
+
+##å°†ä¸‹è½½çš„æ•°æ®å†™å…¥Excel
+write.csv(ZSbank,file="ZSbank.csv")   # ä¿å­˜åæ²¡æœ‰æ—¶é—´
+write.csv(JD,file="JD.csv") 
+
+write.csv(data.frame(ZSbank),file="ZSbank1.csv")
+
+
+############# å¸¸è§æŒ‡æ•°ä»£ç  ############################
+#ä¸Šæµ·è‚¡å¸‚æ•°æ®: 600000.ss, æ·±åœ³è‚¡å¸‚æ•°æ®ï¼š000001.sz
+##ä¸Šè¯æŒ‡æ•°ï¼š000001.ss æ·±è¯æˆæŒ‡ï¼š399001.sz,æ²ªæ·±300æŒ‡æ•°ä»£ç ï¼š000300.ss
+##é“ç¼æ–¯ï¼š^DJI, æ ‡å‡†æ™®å°”ï¼š^GSPC, çº³æ–¯è¾¾å…‹ï¼š^IXIC
+##è‹±å›½ï¼š^FTSE, æ³•å›½ï¼š^FCHI å¾·å›½ï¼š^GDAXI æ—¥æœ¬ï¼š^N225
+## ææ…ŒæŒ‡æ•° ^VIX  åå¹´å›½å€ºæ”¶ç›Šç‡ ^TNX
+
+getSymbols("^DJI")
+
+setSymbolLookup(è´µå·èŒ…å°=list(name="600036.ss",src="yahoo",from = "2012-01-01",
+                          to = "2012-08-31"))  
+getSymbols("è´µå·èŒ…å°")
+chartSeries(è´µå·èŒ…å°,theme="white")
+dev.new()  #æ·»åŠ ä¸€å‰¯æ–°å›¾åˆ©äºæ¯”è¾ƒ
+chartSeries(æ‹›å•†é“¶è¡Œ,up.col='red',dn.col='green',theme="white") #ä¸­å›½å¼Kçº¿å›¾
+
+##è·å–åˆ†çº¢ä¿¡æ¯
+getDividends("600036.ss",  from = "1990-01-01", to = Sys.Date())   # æ‹›å•†é“¶è¡Œ
+getDividends("600519.ss",  from = "1990-01-01", to = Sys.Date())   # è´µå·èŒ…å°
+
+
+
+#####################  FRED  #######################################
+
+#Download exchange rate data from FRED: https://research.stlouisfed.org/fred2/
 
 library(quantmod)
-getSymbols("JD",src="yahoo",from = "2014-05-22",
-            to = "2015-07-31")     # or to = Sys.Date(),  #  AAPL,GOOG,MSFT
-candleChart(JD,multi.col=F,theme="white",TA=NULL) #TA=NULL  multi.col=F
-chartSeries(GOOG,theme="white",TA=NULL)
-chartSeries(GOOG,up.col='red',dn.col='green',theme="white",TA=NULL)
+getSymbols("DTWEXM",src="FRED",from="2009-01-01",to="2020-03-31") 
+
+#	DTWEXM	 Trade Weighted Exchange Index: Major Currencies	     1973-01-02	 D
+#	DEXUSEU	 U.S. / Euro Foreign Exchange Rate	                     1999-01-04	 D		 
+#	DEXJPUS	 Japan / U.S. Foreign Exchange Rate	                     1971-01-04	 D	 	 
+#	DTWEXB	 Trade Weighted Exchange Index: Broad               	     1995-01-04	 D	 	 
+#	DEXCHUS	 China / U.S. Foreign Exchange Rate	                     1981-01-02	 D	 	 
+#	DEXCAUS	 Canada / U.S. Foreign Exchange Rate                 	     1971-01-04	 D	 	 
+#	DEXUSUK	 U.S. / U.K Foreign Exchange Rate                    	     1971-01-04	 D	 	 
+#	DEXUSAL	 U.S. / Australia Foreign Exchange Rate              	     1971-01-04	 D	 	 
+#	DEXSZUS	 Switzerland / U.S. Foreign Exchange Rate         	     1971-01-04	 D	 	 
+#	DEXBZUS	 Brazil / U.S. Foreign Exchange Rate	                     1995-01-02	 D	 	 
+#	DEXTAUS	 Taiwan / U.S. Foreign Exchange Rate	                     1983-10-03	 D	 	 
+#	DEXKOUS	 South Korea / U.S. Foreign Exchange Rate            	     1981-04-13	 D	  
+#	DEXMXUS	 Mexico / U.S. Foreign Exchange Rate	                     1993-11-08	 D	  
+#	DEXINUS	 India / U.S. Foreign Exchange Rate	                     1973-01-02	 D	 	 
+#	DTWEXO	 Trade Weighted Exchange Index:                  	     1995-01-04	 D	 	 
+#	DEXUSNZ	 U.S. / New Zealand Foreign Exchange Rate	             1971-01-04	 D		 
+#	DEXHKUS	 Hong Kong / U.S. Foreign Exchange Rate	                     1981-01-02	 D	 	 
+#	DEXSDUS	 Sweden / U.S. Foreign Exchange Rate	                     1971-01-04	 D	 	 
+#	DEXSIUS	 Singapore / U.S. Foreign Exchange Rate                	     1981-01-02	 D	 	 
+#	DEXSFUS	 South Africa / U.S. Foreign Exchange Rate          	     1971-01-04	 D	  
+#	DEXTHUS	 Thailand / U.S. Foreign Exchange Rate	                     1981-01-02	 D	 	 
+#	DEXDNUS	 Denmark / U.S. Foreign Exchange Rate	                     1971-01-04	 D	 	 
+#	DEXMAUS	 Malaysia / U.S. Foreign Exchange Rate	                     1971-01-04	 D		 
+#	DEXNOUS	 Norway / U.S. Foreign Exchange Rate	                     1971-01-04	 D	 	 
+#	DEXVZUS	 Venezuela / U.S. Foreign Exchange Rate	                     1995-01-02	 D		 
+#	DEXSLUS	 Sri Lanka / U.S. Foreign Exchange Rate	                     1973-01-02	 D	
+
+##################### 4æœˆ7æ—¥æ•™å­¦ ################################################
+library(quantmod)
+library(timeSeries)
+library(fPortfolio)
 
 
-##change data to time series for analysis
-tsibm<-ts(IBM$IBM.Close)
+getSymbols("^GSPC",from="2015-01-01")
+getSymbols("AAPL",from="2015-01-01")
 
-#Ã»ÓĞ³É½»Á¿ºÍµ÷ÕûºóµÄ¼Û¸ñ£¨Adjusted£©
-library(tseries)
-SANYI<-get.hist.quote(instrument='600031.ss',start='2012-01-01',end='2012-08-16')
-candleChart(SANYI,multi.col=TRUE,theme="white")
-chartSeries(SANYI,theme="white")
+setSymbolLookup(SH=list(name="000001.ss",src="yahoo",from = "2015-01-01"))  
+getSymbols("SH")
 
-###################################################
-#ÉÏº£¹ÉÊĞÊı¾İ: 600000.ss, ÉîÛÚ¹ÉÊĞÊı¾İ£º000001.sz
-##ÉÏÖ¤Ö¸Êı£º^SSEC,000001,ss ÉîÖ¤³ÉÖ¸£º399001.sz,»¦Éî300Ö¸Êı´úÂë£º000300.ss
-getSymbols("^SSEC",src="yahoo",from = "2014-10-01",
-            to = Sys.Date())
-chartSeries(SSEC,theme="white")  #TA=NULL  multi.col=F
-chartSeries(SSEC,up.col='red',dn.col='green',theme="white")
-zj<- getSymbols("000898.SZ",auto.assign=FALSE,from="2014-11-17",to=Sys.Date())
-chartSeries(wk,theme="white")
-zj1<- getSymbols("0347.HK",auto.assign=FALSE,from="2014-11-17",to=Sys.Date())
-chartSeries(wk1,theme="white")
-rwk<-dailyReturn(wk)
-rwk1<-dailyReturn(wk1)
-
-rzj<-dailyReturn(zj)
-rzj1<-dailyReturn(zj1)
-rzj11<-cbind(rzj,rzj1)
-rzj22<-rzj11
-rzj22[rzj22==0]<-NA
-rzj22<-na.omit(rzj22)
-cor(rzj22)
-
-
-
-setSymbolLookup(ÉîÖ¤³ÉÖ¸=list(name="399001.sz",src="yahoo",from = "2012-01-01",
-            to = "2012-08-31"))  
-getSymbols("ÉîÖ¤³ÉÖ¸")
-chartSeries(ÉîÖ¤³ÉÖ¸,theme="white")
-
-setSymbolLookup(ÕĞÉÌÒøĞĞ=list(name="600036.ss",src="yahoo",from = "2012-01-01",
-            to = "2012-08-31"))  
-getSymbols("ÕĞÉÌÒøĞĞ")
-chartSeries(ÕĞÉÌÒøĞĞ,theme="white")
-dev.new()  #Ìí¼ÓÒ»¸±ĞÂÍ¼ÀûÓÚ±È½Ï
-chartSeries(ÕĞÉÌÒøĞĞ,up.col='red',dn.col='green',theme="white") #ÖĞ¹úÊ½KÏßÍ¼
-
-setSymbolLookup(Íò¿Æ=list(name="000002.sz",src="yahoo",from = "2015-11-01",
-            to = "2016-09-30"))  
-getSymbols("Íò¿Æ")
-Íò¿Æ[Íò¿Æ==0]<-NA
-Íò¿Æ<-na.omit(Íò¿Æ)
-chartSeries(Íò¿Æ,theme="white")
-dev.new()  #Ìí¼ÓÒ»¸±ĞÂÍ¼ÀûÓÚ±È½Ï
-chartSeries(Íò¿Æ,up.col='red',dn.col='green',theme="white") #ÖĞ¹úÊ½KÏßÍ¼
+setSymbolLookup(MT=list(name="600519.ss",src="yahoo",from = "2015-01-01"))  
+getSymbols("MT")
 
 
 
-addSMA(n = 10, on = 1, with.col = Cl, overlay = TRUE, col = "brown") #¼òµ¥ÒÆ¶¯Æ½¾ùÏß,n=5,10,20,30,60,250
+
+addSMA(n = 10, on = 1, with.col = Cl, overlay = TRUE, col = "brown") #ç®€å•ç§»åŠ¨å¹³å‡çº¿,n=5,10,20,30,60,250
 addEMA(n = 10, wilder = FALSE, ratio=NULL, on = 1,with.col = Cl, overlay = TRUE, col = "blue")
 
-addWMA()  #¼ÓÈ¨ÒÆ¶¯Æ½¾ùÏß
-addMACD() #¼ÓMACDÏß
-addBBands()  #²¼ÁÖÏßÖ¸±ê
-addRSI()     # Ïà¶ÔÇ¿ÈõRSIÖ¸±ê
+addWMA()  #åŠ æƒç§»åŠ¨å¹³å‡çº¿
+addMACD() #åŠ MACDçº¿
+addBBands()  #å¸ƒæ—çº¿æŒ‡æ ‡
+addRSI()     # ç›¸å¯¹å¼ºå¼±RSIæŒ‡æ ‡
 
-##ÇóÈÕ£¬ÔÂ£¬¼¾¶ÈÊÕÒæÂÊ
-getSymbols("^SSEC",src="yahoo",from = "2012-01-01",
-            to = Sys.Date())
-periodReturn(SSEC,period='daily')  #weekly,monthly,quarterly
-plot(periodReturn(SSEC,period='daily'),main="ÉÏÖ¤Ö¸ÊıÈÕÊÕÒæÂÊ×ßÊÆÍ¼")
+# ä¸‹è½½6åªè‚¡ç¥¨æ•°æ®
+getSymbols(c("AAPL","AMZN","DIS","MSFT","GS","NKE"),from="2015-01-01")
 
+# è®¡ç®—6åªè‚¡ç¥¨æ”¶ç›Šç‡
+AMZN_ret <- dailyReturn(AMZN)
+AAPL_ret <- dailyReturn(AAPL)
+DIS_ret <- dailyReturn(DIS)
+MSFT_ret <- dailyReturn(MSFT)
+GS_ret <- dailyReturn(GS)
+NKE_ret <- dailyReturn(NKE)
 
-#»ñÈ¡¹«Ë¾²ÆÎñÊı¾İ
-getFinancials('CHL')    #ÖĞ¹úÒÆ¶¯µÄ²ÆÎñÊı¾İ
-viewFin(CHL.f,"IS","Q")  ###viewFinancials(CHL, type=c(¡¯BS¡¯,¡¯IS¡¯,¡¯CF¡¯), period=c(¡¯A¡¯,¡¯Q¡¯))
-
-
-#####################################################################
-
-#ÈÕ±¾¹ÉÊĞÊı¾İ£¬install.packages("RFinanceYJ")
-
-library(RFinanceYJ)
-library(quantmod)
-
-sony <- quoteStockTsData('6758.t', since='2010-01-01',date.end='2012-07-31')
-names(sony)<-c("Date","Open","High","Low","Close","Volume")
-sony<-read.zoo(sony,tz="")
-candleChart(sony)
-
-
-#Download exchange rate data from FRED: http://research.stlouisfed.org/fred2/
-
-library(quantmod)
-getSymbols("MEXUSEU",src="FRED",from="2009-01-01",to="2013-03-31") 
-
-#	DTWEXM	 Trade Weighted Exchange Index: Major Currencies	 1973-01-02	 D
-#	DEXUSEU	 U.S. / Euro Foreign Exchange Rate	                   1999-01-04	 D		 
-#	DEXJPUS	 Japan / U.S. Foreign Exchange Rate	                   1971-01-04	 D	 	 
-#	DTWEXB	 Trade Weighted Exchange Index: Broad             	 1995-01-04	 D	 	 
-#	DEXCHUS	 China / U.S. Foreign Exchange Rate	                   1981-01-02	 D	 	 
-#	DEXCAUS	 Canada / U.S. Foreign Exchange Rate                 	 1971-01-04	 D	 	 
-#	DEXUSUK	 U.S. / U.K Foreign Exchange Rate                    	 1971-01-04	 D	 	 
-#	DEXUSAL	 U.S. / Australia Foreign Exchange Rate              	 1971-01-04	 D	 	 
-#	DEXSZUS	 Switzerland / U.S. Foreign Exchange Rate         	 1971-01-04	 D	 	 
-#	DEXBZUS	 Brazil / U.S. Foreign Exchange Rate	             1995-01-02	 D	 	 
-#	DEXTAUS	 Taiwan / U.S. Foreign Exchange Rate	             1983-10-03	 D	 	 
-#	DEXKOUS	 South Korea / U.S. Foreign Exchange Rate            	 1981-04-13	 D	  
-#	DEXMXUS	 Mexico / U.S. Foreign Exchange Rate	             1993-11-08	 D	  
-#	DEXINUS	 India / U.S. Foreign Exchange Rate	                   1973-01-02	 D	 	 
-#	DTWEXO	 Trade Weighted Exchange Index:                  	 1995-01-04	 D	 	 
-#	DEXUSNZ	 U.S. / New Zealand Foreign Exchange Rate	             1971-01-04	 D		 
-#	DEXHKUS	 Hong Kong / U.S. Foreign Exchange Rate	             1981-01-02	 D	 	 
-#	DEXSDUS	 Sweden / U.S. Foreign Exchange Rate	             1971-01-04	 D	 	 
-#	DEXSIUS	 Singapore / U.S. Foreign Exchange Rate          	 1981-01-02	 D	 	 
-#	DEXSFUS	 South Africa / U.S. Foreign Exchange Rate          	 1971-01-04	 D	  
-#	DEXTHUS	 Thailand / U.S. Foreign Exchange Rate	             1981-01-02	 D	 	 
-#	DEXDNUS	 Denmark / U.S. Foreign Exchange Rate	             1971-01-04	 D	 	 
-#	DEXMAUS	 Malaysia / U.S. Foreign Exchange Rate	             1971-01-04	 D		 
-#	DEXNOUS	 Norway / U.S. Foreign Exchange Rate	             1971-01-04	 D	 	 
-#	DEXVZUS	 Venezuela / U.S. Foreign Exchange Rate	             1995-01-02	 D		 
-#	DEXSLUS	 Sri Lanka / U.S. Foreign Exchange Rate	             1973-01-02	 D	
-
-##´ÓOANDAÍøÕ¾»ñÈ¡Íâ»ãÊı¾İ£¬get the data of exchange rate from OANDA:  http://www.oanda.com/
-library(quantmod)
-getSymbols("USD/RUB",src="oanda",from = "2012-04-01",to="2013-03-31")  
-
-##½«ÏÂÔØµÄÊı¾İĞ´ÈëExcel
-write.csv(600031.ss.f,file="data.csv")  #xÎª±£´æÔÚRÀïÃæµÄÊı¾İ£¬data.csvÎªExcelµÄÊı¾İ
+# åˆå¹¶7åªè‚¡ç¥¨æ”¶ç›Šç‡
+data_ret <- merge(AAPL_ret,AMZN_ret,DIS_ret,MSFT_ret,GS_ret,NKE_ret)
+colnames(data_ret)<-c("AAPL","AMZN","DIS","MSFT","GS","NKE")
+data_ret<-as.timeSeries(data_ret)
+frontier<-portfolioFrontier(data_ret)
+frontier
+plot(frontier)
