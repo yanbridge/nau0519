@@ -253,11 +253,11 @@ setSymbolLookup(ZS=list(name="600036.ss",src="yahoo",from = "2015-01-01",
 getSymbols("ZS")
 
 setSymbolLookup(ZX=list(name="600030.ss",src="yahoo",from = "2015-01-01",
-                          to = Sys.time()))    ## 招商银行
+                          to = Sys.time()))    ## 中信证券
 getSymbols("ZX")
 
 setSymbolLookup(PA=list(name="601318.ss",src="yahoo",from = "2015-01-01",
-                          to = Sys.time()))    ## 招商银行
+                          to = Sys.time()))    ## 中国平安
 getSymbols("PA")
 
 setSymbolLookup(MT=list(name="600519.ss",src="yahoo",from = "2015-01-01",
