@@ -281,3 +281,39 @@ data.ret<-as.timeSeries(data.ret)
 frontier_ch<-portfolioFrontier(data.ret)
 frontier_ch
 plot(frontier_ch)
+
+## 重新调整组合
+options(scipen = 5)
+options(digits = 3)
+mean_ret<-apply(data.ret,2,mean)
+sd_ret<-apply(data.ret,2,sd)
+cbind(mean_ret,sd_ret)  # 去掉中信证券
+
+data.ret1 <- merge(ZS_ret,PA_ret,MT_ret,HR_ret,XF_ret,GL_ret)
+colnames(data.ret1)<-c("ZS","PA","MT","HR","XF","GL")
+data.ret1<-as.timeSeries(data.ret1)
+frontier_ch1<-portfolioFrontier(data.ret1)
+frontier_ch1
+plot(frontier_ch1)
+
+## 再调整组合
+cbind(mean_ret,sd_ret)   ## 科大讯飞标准差大，去掉
+
+data.ret2 <- merge(ZS_ret,PA_ret,MT_ret,HR_ret,GL_ret)
+colnames(data.ret2)<-c("ZS","PA","MT","HR","GL")
+data.ret2<-as.timeSeries(data.ret2)
+frontier_ch2<-portfolioFrontier(data.ret2)
+frontier_ch2
+plot(frontier_ch2)
+
+
+## 再调整一次
+cbind(mean_ret,sd_ret)  # 去掉格力电器
+
+data.ret3 <- merge(ZS_ret,PA_ret,MT_ret,HR_ret)
+colnames(data.ret3)<-c("ZS","PA","MT","HR")
+data.ret3<-as.timeSeries(data.ret3)
+frontier_ch3<-portfolioFrontier(data.ret3)
+frontier_ch3
+plot(frontier_ch3)
+
