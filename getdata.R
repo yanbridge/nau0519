@@ -4,13 +4,11 @@ rm(list=ls())            #删除当前环境中的变量和数据
 getwd()                  #获取当前工作路径
 setwd("D:/Rdata")        #改变工作路径至D盘的Rdata文件夹
 
-
 #########  3月28日教学 #################
 #Download data from Yahoo!Finance
 install.packages("quantmod")     #  如果未安装过此程序包,请运行此命令
 
 library(quantmod)               # 导入quantmod程序包
-
 
 getSymbols("JD",src="yahoo",from = "2014-05-22",
            to = Sys.Date())     # or to = Sys.Date(),  #  AAPL,GOOG,MSFT
@@ -24,8 +22,6 @@ JD1819<- JD["2018::2019"]      # 提取京东2018-2019年股票交易数据
 chartSeries(JD,theme="white",TA=NULL)   # 默认K线风格为欧美式
 chartSeries(JD,up.col='red',dn.col='green',
             theme="white",TA=NULL,subset="2020")   #画出京东2020年以来的中国式K线图
-
-
 
 ## 下载中国股票数据
 setSymbolLookup(招商银行=list(name="600036.ss",src="yahoo",from = "1990-01-01",
@@ -46,9 +42,6 @@ library(quantmod)
 
 getSymbols("JD",src="yahoo",from = "2014-05-22",
            to = Sys.Date())     # or to = Sys.Date(),  #  AAPL,GOOG,MSFT
-
-
-
 
 ## 提取京东的收盘价
 
@@ -115,7 +108,6 @@ xfit<-seq(min(dreturn.jd),max(dreturn.jd),length=100)
 yfit<-dnorm(xfit,mean(dreturn.jd),sd(dreturn.jd))
 lines(xfit,yfit,col="blue",lwd=3,lty=2)
 
-
 ## 保存并再次读取,转化为xts类型数据
 write.csv(JD,file="jd.csv")
 write.csv(data.frame(JD),file="jd.csv")
@@ -147,7 +139,6 @@ write.csv(JD,file="JD.csv")
 
 write.csv(data.frame(ZSbank),file="ZSbank1.csv")
 
-
 ############# 常见指数代码 ############################
 #上海股市数据: 600000.ss, 深圳股市数据：000001.sz
 ##上证指数：000001.ss 深证成指：399001.sz,沪深300指数代码：000300.ss
@@ -168,8 +159,6 @@ chartSeries(招商银行,up.col='red',dn.col='green',theme="white") #中国式K�
 getDividends("600036.ss",  from = "1990-01-01", to = Sys.Date())   # 招商银行
 getDividends("600519.ss",  from = "1990-01-01", to = Sys.Date())   # 贵州茅台
 
-
-
 #####################  FRED  #######################################
 
 #Download exchange rate data from FRED: https://research.stlouisfed.org/fred2/
@@ -177,26 +166,26 @@ getDividends("600519.ss",  from = "1990-01-01", to = Sys.Date())   # 贵州茅�
 library(quantmod)
 getSymbols("DTWEXM",src="FRED",from="2009-01-01",to="2020-03-31") 
 
-#	DTWEXM	 Trade Weighted Exchange Index: Major Currencies	     1973-01-02	 D
+#	DTWEXM	 Trade Weighted Exchange Index: Major Currencies	          1973-01-02	 D
 #	DEXUSEU	 U.S. / Euro Foreign Exchange Rate	                     1999-01-04	 D		 
 #	DEXJPUS	 Japan / U.S. Foreign Exchange Rate	                     1971-01-04	 D	 	 
-#	DTWEXB	 Trade Weighted Exchange Index: Broad               	     1995-01-04	 D	 	 
+#	DTWEXB	 Trade Weighted Exchange Index: Broad               	          1995-01-04	 D	 	 
 #	DEXCHUS	 China / U.S. Foreign Exchange Rate	                     1981-01-02	 D	 	 
-#	DEXCAUS	 Canada / U.S. Foreign Exchange Rate                 	     1971-01-04	 D	 	 
-#	DEXUSUK	 U.S. / U.K Foreign Exchange Rate                    	     1971-01-04	 D	 	 
-#	DEXUSAL	 U.S. / Australia Foreign Exchange Rate              	     1971-01-04	 D	 	 
-#	DEXSZUS	 Switzerland / U.S. Foreign Exchange Rate         	     1971-01-04	 D	 	 
+#	DEXCAUS	 Canada / U.S. Foreign Exchange Rate                 	          1971-01-04	 D	 	 
+#	DEXUSUK	 U.S. / U.K Foreign Exchange Rate                    	          1971-01-04	 D	 	 
+#	DEXUSAL	 U.S. / Australia Foreign Exchange Rate              	          1971-01-04	 D	 	 
+#	DEXSZUS	 Switzerland / U.S. Foreign Exchange Rate         	          1971-01-04	 D	 	 
 #	DEXBZUS	 Brazil / U.S. Foreign Exchange Rate	                     1995-01-02	 D	 	 
 #	DEXTAUS	 Taiwan / U.S. Foreign Exchange Rate	                     1983-10-03	 D	 	 
-#	DEXKOUS	 South Korea / U.S. Foreign Exchange Rate            	     1981-04-13	 D	  
+#	DEXKOUS	 South Korea / U.S. Foreign Exchange Rate            	          1981-04-13	 D	  
 #	DEXMXUS	 Mexico / U.S. Foreign Exchange Rate	                     1993-11-08	 D	  
 #	DEXINUS	 India / U.S. Foreign Exchange Rate	                     1973-01-02	 D	 	 
-#	DTWEXO	 Trade Weighted Exchange Index:                  	     1995-01-04	 D	 	 
-#	DEXUSNZ	 U.S. / New Zealand Foreign Exchange Rate	             1971-01-04	 D		 
+#	DTWEXO	 Trade Weighted Exchange Index:                  	          1995-01-04	 D	 	 
+#	DEXUSNZ	 U.S. / New Zealand Foreign Exchange Rate	                     1971-01-04	 D		 
 #	DEXHKUS	 Hong Kong / U.S. Foreign Exchange Rate	                     1981-01-02	 D	 	 
 #	DEXSDUS	 Sweden / U.S. Foreign Exchange Rate	                     1971-01-04	 D	 	 
-#	DEXSIUS	 Singapore / U.S. Foreign Exchange Rate                	     1981-01-02	 D	 	 
-#	DEXSFUS	 South Africa / U.S. Foreign Exchange Rate          	     1971-01-04	 D	  
+#	DEXSIUS	 Singapore / U.S. Foreign Exchange Rate                          1981-01-02	 D	 	 
+#	DEXSFUS	 South Africa / U.S. Foreign Exchange Rate          	          1971-01-04	 D	  
 #	DEXTHUS	 Thailand / U.S. Foreign Exchange Rate	                     1981-01-02	 D	 	 
 #	DEXDNUS	 Denmark / U.S. Foreign Exchange Rate	                     1971-01-04	 D	 	 
 #	DEXMAUS	 Malaysia / U.S. Foreign Exchange Rate	                     1971-01-04	 D		 
@@ -206,9 +195,9 @@ getSymbols("DTWEXM",src="FRED",from="2009-01-01",to="2020-03-31")
 
 ##################### 4月7日教学 ################################################
 library(quantmod)
-library(timeSeries)
-library(fPortfolio)
-
+library(timeSeries)   # 如果没有安装，请 run:  install.packages("timeSeries")
+library(fPortfolio)   # 如果没有安装，请 run:  install.packages("fPortfolio")
+ 
 
 getSymbols("^GSPC",from="2015-01-01")
 getSymbols("AAPL",from="2015-01-01")
@@ -222,10 +211,10 @@ getSymbols("MT")
 addSMA(n = 10, on = 1, with.col = Cl, overlay = TRUE, col = "brown") #简单移动平均线,n=5,10,20,30,60,250
 addEMA(n = 10, wilder = FALSE, ratio=NULL, on = 1,with.col = Cl, overlay = TRUE, col = "blue")
 
-addWMA()  #加权移动平均线
-addMACD() #加MACD线
-addBBands()  #布林线指标
-addRSI()     # 相对强弱RSI指标
+addWMA()      # 加权移动平均线
+addMACD()     # 加MACD线
+addBBands()   # 布林线指标
+addRSI()      # 相对强弱RSI指标
 
 # 下载6只股票数据
 getSymbols(c("AAPL","AMZN","DIS","MSFT","GS","NKE"),from="2015-01-01")
