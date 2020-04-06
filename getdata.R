@@ -219,9 +219,6 @@ getSymbols("SH")
 setSymbolLookup(MT=list(name="600519.ss",src="yahoo",from = "2015-01-01"))  
 getSymbols("MT")
 
-
-
-
 addSMA(n = 10, on = 1, with.col = Cl, overlay = TRUE, col = "brown") #简单移动平均线,n=5,10,20,30,60,250
 addEMA(n = 10, wilder = FALSE, ratio=NULL, on = 1,with.col = Cl, overlay = TRUE, col = "blue")
 
@@ -241,10 +238,60 @@ MSFT_ret <- dailyReturn(MSFT)
 GS_ret <- dailyReturn(GS)
 NKE_ret <- dailyReturn(NKE)
 
-# 合并7只股票收益率
+# 合并6只股票收益率
 data_ret <- merge(AAPL_ret,AMZN_ret,DIS_ret,MSFT_ret,GS_ret,NKE_ret)
 colnames(data_ret)<-c("AAPL","AMZN","DIS","MSFT","GS","NKE")
 data_ret<-as.timeSeries(data_ret)
-frontier<-portfolioFrontier(data_ret)
-frontier
-plot(frontier)
+frontier_us<-portfolioFrontier(data_ret)
+frontier_us
+plot(frontier_us)
+
+###### 中国股市的有效前沿模拟
+
+setSymbolLookup(ZS=list(name="600036.ss",src="yahoo",from = "2015-01-01",
+                          to = Sys.time()))    ## 招商银行
+getSymbols("ZS")
+
+setSymbolLookup(ZX=list(name="600030.ss",src="yahoo",from = "2015-01-01",
+                          to = Sys.time()))    ## 招商银行
+getSymbols("ZX")
+
+setSymbolLookup(PA=list(name="601318.ss",src="yahoo",from = "2015-01-01",
+                          to = Sys.time()))    ## 招商银行
+getSymbols("PA")
+
+setSymbolLookup(MT=list(name="600519.ss",src="yahoo",from = "2015-01-01",
+                            to = Sys.time()))   ## 贵州茅台
+getSymbols("MT")
+
+setSymbolLookup(HR=list(name="600276.ss",src="yahoo",from = "2015-01-01",
+                        to = Sys.time()))      ## 恒瑞医药
+getSymbols("HR")
+
+setSymbolLookup(XF=list(name="002230.sz",src="yahoo",from = "2015-01-01",
+                        to = Sys.time()))     ## 科大讯飞
+getSymbols("XF")
+
+setSymbolLookup(GL=list(name="000651.sz",src="yahoo",from = "2015-01-01",
+                        to = Sys.time()))     ## 格力电器
+getSymbols("GL")
+
+setSymbolLookup(GL=list(name="000651.sz",src="yahoo",from = "2015-01-01",
+                        to = Sys.time()))     ## 格力电器
+getSymbols("GL")
+
+# 计算7只股票收益率
+ZS_ret <- dailyReturn(ZS)
+ZX_ret <- dailyReturn(ZX)
+PA_ret <- dailyReturn(PA)
+MT_ret <- dailyReturn(MT)
+HR_ret <- dailyReturn(HR)
+XF_ret <- dailyReturn(XF)
+GL_ret <- dailyReturn(GL)
+
+data.ret <- merge(ZS_ret,ZX_ret,PA_ret,MT_ret,HR_ret,XF_ret,GL_ret)
+colnames(data_ret)<-c("ZS","ZX","PA","MT","HR","XF","GL")
+data.ret<-as.timeSeries(data.ret)
+frontier_ch<-portfolioFrontier(data.ret)
+frontier_ch
+plot(frontier_ch)
