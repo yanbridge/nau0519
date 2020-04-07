@@ -313,3 +313,50 @@ data.ret3<-as.timeSeries(data.ret3)
 frontier_ch3<-portfolioFrontier(data.ret3)
 frontier_ch3
 plot(frontier_ch3)
+
+##################### 4月14日 教学 #########################
+library(quantmod)
+
+getSymbols(c("AAPL","AMZN","DIS","MSFT","GS","NKE"),from="2015-01-01")
+
+# 计算6只股票收益率
+AMZN_ret <- dailyReturn(AMZN)
+AAPL_ret <- dailyReturn(AAPL)
+DIS_ret <- dailyReturn(DIS)
+MSFT_ret <- dailyReturn(MSFT)
+GS_ret <- dailyReturn(GS)
+NKE_ret <- dailyReturn(NKE)
+
+# 合并6只股票收益率
+data_ret <- merge(AAPL_ret,AMZN_ret,DIS_ret,MSFT_ret,GS_ret,NKE_ret)
+colnames(data_ret)<-c("AAPL","AMZN","DIS","MSFT","GS","NKE")
+
+## 查看收益率和标准差
+options(scipen = 5)
+options(digits = 3)
+mean_ret<-apply(data_ret,2,mean)*100
+sd_ret<-apply(data_ret,2,sd)*100
+cbind(mean_ret,sd_ret) 
+
+plot(sd_ret,mean_ret,xlim = c(1,2.1),ylim = c(-0.01,0.21),pch=1:6,col=2:7)
+text(1.79,0.09,"Apple")
+text(1.90,0.165,"Amazon")
+text(1.56,0.025,"Disney")
+text(1.73,0.12,"Microsoft")
+text(1.83,0.01,"Goldman Sachs")
+text(1.7,0.065,"Nike")
+
+##########  单指数模型
+setSymbolLookup(Shindex=list(name="000001.ss",src="yahoo",from = "2015-01-01",
+                        to = Sys.time()))    ## 上海综合指数
+getSymbols("Shindex")
+setSymbolLookup(ZS=list(name="600036.ss",src="yahoo",from = "2015-01-01",
+                        to = Sys.time()))    ## 招商银行
+getSymbols("ZS")
+
+setSymbolLookup(MT=list(name="600519.ss",src="yahoo",from = "2015-01-01",
+                        to = Sys.time()))   ## 贵州茅台
+getSymbols("MT")
+setSymbolLookup(XF=list(name="002230.sz",src="yahoo",from = "2015-01-01",
+                        to = Sys.time()))     ## 科大讯飞
+getSymbols("XF")
