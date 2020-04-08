@@ -363,7 +363,7 @@ getSymbols("XF")
 setSymbolLookup(GL=list(name="000651.sz",src="yahoo",from = "2015-01-01",
                         to = Sys.time()))     ## 格力电器
 getSymbols("GL")
-setSymbolLookup(BD=list(name="600130.sz",src="yahoo",from = "2015-01-01",
+setSymbolLookup(BD=list(name="600130.ss",src="yahoo",from = "2015-01-01",
                         to = Sys.time()))     ## 波导股份
 getSymbols("BD")
 
