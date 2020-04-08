@@ -347,9 +347,9 @@ text(1.83,0.01,"Goldman Sachs")
 text(1.7,0.065,"Nike")
 
 ##########  单指数模型
-setSymbolLookup(Shindex=list(name="000001.ss",src="yahoo",from = "2015-01-01",
+setSymbolLookup(SH=list(name="000001.ss",src="yahoo",from = "2015-01-01",
                         to = Sys.time()))    ## 上海综合指数
-getSymbols("Shindex")
+getSymbols("SH")
 setSymbolLookup(ZS=list(name="600036.ss",src="yahoo",from = "2015-01-01",
                         to = Sys.time()))    ## 招商银行
 getSymbols("ZS")
@@ -360,3 +360,35 @@ getSymbols("MT")
 setSymbolLookup(XF=list(name="002230.sz",src="yahoo",from = "2015-01-01",
                         to = Sys.time()))     ## 科大讯飞
 getSymbols("XF")
+setSymbolLookup(GL=list(name="000651.sz",src="yahoo",from = "2015-01-01",
+                        to = Sys.time()))     ## 格力电器
+getSymbols("GL")
+setSymbolLookup(BD=list(name="600130.sz",src="yahoo",from = "2015-01-01",
+                        to = Sys.time()))     ## 波导股份
+getSymbols("BD")
+
+SH_ret <- dailyReturn(SH)*100
+ZS_ret <- dailyReturn(ZS)*100
+MT_ret <- dailyReturn(MT)*100
+XF_ret <- dailyReturn(XF)*100
+GL_ret <- dailyReturn(GL)*100
+BD_ret <- dailyReturn(BD)*100
+
+ZSdata <- merge(ZS_ret,SH_ret)
+MTdata <- merge(MT_ret,SH_ret)
+XFdata <- merge(XF_ret,SH_ret)
+GLdata <- merge(GL_ret,SH_ret)
+BDdata <- merge(BD_ret,SH_ret)
+
+ZSdata[ZSdata==0] <- NA
+MTdata[MTdata==0] <- NA
+XFdata[XFdata==0] <- NA
+GLdata[GLdata==0] <- NA
+BDdata[BDdata==0] <- NA
+
+ZSdata <- na.omit(ZSdata)
+MTdata <- na.omit(MTdata)
+XFdata <- na.omit(XFdata)
+GLdata <- na.omit(GLdata)
+BDdata <- na.omit(BDdata)
+
