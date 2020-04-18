@@ -458,9 +458,10 @@ abline(mtmodel,col=2,lwd=3)
 abline(h=0,lty=2)
 abline(v=0,lty=2)
 Sys.time()
-print("你的学号+名字")
+print("你的班级+名字")
 
 ### 如何利用周（月）数据构建单指数模型呢？
+## 仿照贵州茅台的命令，做出科大讯飞的单指数图
 SH_w <- weeklyReturn(SH)*100
 XF_w <- weeklyReturn(XF)*100
 
@@ -468,7 +469,15 @@ length(SH_w);length(XF_w)  # 查看数据长度
 xfmodel <- lm(XF_w ~ SH_w)
 summary(xfmodel)
 
-## 仿照招商银行的命令，做出科大讯飞的单指数图
+xf<-as.vector(XF_w)
+index_xf<-as.vector(SH_w)
+
+plot(index_xf,xf,col="green",main="科大讯飞单指数模型（周）")
+abline(xfmodel,col="red",lwd=3)
+abline(h=0,lty=2)
+abline(v=0,lty=2)
+
+
 
 ########### VaR（Value at Risk）值计算 ############
 
@@ -477,6 +486,7 @@ summary(xfmodel)
 mu_zs <- mean(ZS_ret)
 sigma_zs <- sd(ZS_ret)
 VaR1.zs_95 <- mu_zs-qnorm(0.05)*sigma_zs ;VaR1.zs_95   # 95%置信水平
+VaR1.zs_975 <- mu_zs-qnorm(0.025)*sigma_zs ;VaR1.zs_975   # 95%置信水平
 VaR1.zs_99 <- mu_zs-qnorm(0.01)*sigma_zs ;VaR1.zs_99  # 99%置信水平
 
 hist(ZS_ret,col="lightblue",probability = T,ylim=c(0,0.3),main = "招商银行收益直方图")
@@ -539,3 +549,25 @@ VaR3.zy_99 <- -quantile(MC_zy, 0.01) ; VaR3.zy_99
 ## 比较三种方法的计算结果
 cbind(VaR1.zy_95,VaR2.zy_95,VaR3.zy_95)  # 95%置信水平
 cbind(VaR1.zy_99,VaR2.zy_99,VaR3.zy_99)  # 99%置信水平
+
+## 模拟股票价格
+S0=50;      #initial price S0
+mu=0.04;    #drift mu
+sigma=0.25;  # volatility sigma
+T=1;        #1 year
+NSteps=252; 
+NReps=10000; 
+SPaths = matrix(NA,NReps,NSteps+1);
+SPaths[,1] = S0;
+dt = T/NSteps
+nudt = (mu-0.5*sigma^2)*dt
+sidt = sigma*sqrt(dt)
+x=seq(1:(NSteps+1))
+colno=c(1,2,3,4,5,6,7,8,9,10)
+for (i in 1:NReps){
+  for (j in 1:NSteps){
+    SPaths[i,j+1] = SPaths[i,j]*exp(nudt + sidt*rnorm(1))
+  }
+  if(i == 1) plot(x,SPaths[i,],"l", ylim=c(20,150),col =sample(colno,1))
+  if (i != 1) lines(x,SPaths[i,],ylim=c(20,150),col =sample(colno,1))
+ }
