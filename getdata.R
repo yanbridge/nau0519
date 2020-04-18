@@ -392,3 +392,142 @@ XFdata <- na.omit(XFdata)
 GLdata <- na.omit(GLdata)
 BDdata <- na.omit(BDdata)
 
+######################## 4月18日教学 ################################
+library(quantmod)
+
+setSymbolLookup(SH=list(name="000001.ss",src="yahoo",from = "2015-01-01",
+                        to = Sys.time()))    ## 上海综合指数
+getSymbols("SH")
+setSymbolLookup(ZS=list(name="600036.ss",src="yahoo",from = "2015-01-01",
+                        to = Sys.time()))    ## 招商银行
+getSymbols("ZS")
+
+setSymbolLookup(MT=list(name="600519.ss",src="yahoo",from = "2015-01-01",
+                        to = Sys.time()))   ## 贵州茅台
+getSymbols("MT")
+setSymbolLookup(XF=list(name="002230.sz",src="yahoo",from = "2015-01-01",
+                        to = Sys.time()))     ## 科大讯飞
+getSymbols("XF")
+setSymbolLookup(GL=list(name="000651.sz",src="yahoo",from = "2015-01-01",
+                        to = Sys.time()))     ## 格力电器
+getSymbols("GL")
+setSymbolLookup(BD=list(name="600130.ss",src="yahoo",from = "2015-01-01",
+                        to = Sys.time()))     ## 波导股份
+getSymbols("BD")
+setSymbolLookup(ZY=list(name="603986.ss",src="yahoo",from = "2015-01-01",
+                        to = Sys.time()))     ## 兆易创新
+getSymbols("ZY")
+
+SH_ret <- dailyReturn(SH)*100
+ZS_ret <- dailyReturn(ZS)*100
+MT_ret <- dailyReturn(MT)*100
+XF_ret <- dailyReturn(XF)*100
+GL_ret <- dailyReturn(GL)*100
+BD_ret <- dailyReturn(BD)*100
+ZY_ret <- dailyReturn(ZY)*100
+
+ZSdata <- merge(ZS_ret,SH_ret)
+MTdata <- merge(MT_ret,SH_ret)
+XFdata <- merge(XF_ret,SH_ret)
+GLdata <- merge(GL_ret,SH_ret)
+BDdata <- merge(BD_ret,SH_ret)
+ZYdata <- merge(ZY_ret,SH_ret)
+
+ZSdata[ZSdata==0] <- NA
+MTdata[MTdata==0] <- NA
+XFdata[XFdata==0] <- NA
+GLdata[GLdata==0] <- NA
+BDdata[BDdata==0] <- NA
+ZYdata[ZYdata==0] <- NA
+
+ZSdata <- na.omit(ZSdata)
+MTdata <- na.omit(MTdata)
+XFdata <- na.omit(XFdata)
+GLdata <- na.omit(GLdata)
+BDdata <- na.omit(BDdata)
+ZYdata <- na.omit(ZYdata)
+
+####### 贵州茅台单指数模型
+mtmodel <- lm(MTdata[,1]~MTdata[,2])
+summary(mtmodel)
+
+mt<-as.vector(MTdata[,1])
+index_mt<-as.vector(MTdata[,2])
+par(family="STKaiti")    # just for MacOS
+plot(index_mt,mt,col=4,main="贵州茅台单指数模型")
+abline(mtmodel,col=2,lwd=3)
+abline(h=0,lty=2)
+abline(v=0,lty=2)
+Sys.time()
+print("你的学号+名字")
+
+### 如何利用周（月）数据构建单指数模型呢？
+SH_w <- weeklyReturn(SH)*100
+XF_w <- weeklyReturn(XF)*100
+
+length(SH_w);length(XF_w)  # 查看数据长度
+xfmodel <- lm(XF_w ~ SH_w)
+summary(xfmodel)
+
+
+########### VaR（Value at Risk）值计算 ############
+
+## ① delta method：方差-协方差法
+# 招商银行
+mu_zs <- mean(ZS_ret)
+sigma_zs <- sd(ZS_ret)
+VaR1.zs_95 <- mu_zs-qnorm(0.05)*sigma_zs ;VaR1.zs_95   # 95%置信水平
+VaR1.zs_99 <- mu_zs-qnorm(0.01)*sigma_zs ;VaR1.zs_99  # 99%置信水平
+
+hist(ZS_ret,col="lightblue",probability = T,ylim=c(0,0.3),main = "招商银行收益直方图")
+lines(density(ZS_ret),col="red",lwd=5)
+
+### 添加正态分布
+xfit<-seq(min(ZS_ret),max(ZS_ret),length=100)
+yfit<-dnorm(xfit,mean(ZS_ret),sd(ZS_ret))
+lines(xfit,yfit,col="blue",lwd=3,lty=2)
+
+abline(v=-VaR1.zs_95,col="green",lwd=3)
+abline(v= VaR1.zs_95,col="green",lwd=3)
+
+abline(v= -VaR1.zs_99,col=6,lwd=3)
+abline(v=  VaR1.zs_99,col=6,lwd=3)
+
+### 计算兆易创新的VaR
+mu_zy <- mean(ZY_ret)
+sigma_zy <- sd(ZY_ret)
+VaR1.zy_95 <- mu_zy-qnorm(0.05)*sigma_zy ;VaR1.zy_95   # 95%置信水平
+VaR1.zy_99 <- mu_zy-qnorm(0.01)*sigma_zy ;VaR1.zy_99   # 99%置信水平
+
+hist(ZY_ret,col="lightblue",breaks = 20,probability = T,ylim=c(0,0.2),main = "兆易创新收益直方图")
+lines(density(ZS_ret),col="red",lwd=5)
+
+### 添加正态分布
+xfit<-seq(min(ZY_ret),max(ZY_ret),length=100)
+yfit<-dnorm(xfit,mean(ZY_ret),sd(ZY_ret))
+lines(xfit,yfit,col="blue",lwd=3,lty=2)
+
+abline(v=-VaR1.zy_95,col="green",lwd=3)
+abline(v= VaR1.zy_95,col="green",lwd=3)
+
+abline(v= -VaR1.zy_99,col=6,lwd=3)
+abline(v=  VaR1.zy_99,col=6,lwd=3)
+
+### ② 历史模拟法
+## 招商银行的VaR
+VaR2.zs_95 <- -quantile(ZS_ret, 0.05) ; VaR2.zs_95
+VaR2.zs_99 <- -quantile(ZS_ret, 0.01) ; VaR2.zs_99
+
+## 兆易创新的VaR 
+VaR2.zy_95 <- -quantile(ZY_ret, 0.05) ; VaR2.zy_95
+VaR2.zy_95 <- -quantile(ZY_ret, 0.01) ; VaR2.zy_95
+
+### ③ 蒙特卡洛模拟法
+## 招商银行的VaR
+MC_zs<-rnorm(100000,mu_zs,sigma_zs)    # 假设服从正态分布
+VaR3.zs_95 <- -quantile(MC_zs, 0.05) ; VaR3.zs_95  
+VaR3.zs_99 <- -quantile(MC_zs, 0.01) ; VaR3.zs_99 
+
+## 比较三种方法的计算结果
+cbind(VaR1.zs_95,VaR2.zs_95,VaR3.zs_95)  # 95%置信水平
+cbind(VaR1.zs_99,VaR2.zs_99,VaR3.zs_99)  # 99%置信水平
