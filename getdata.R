@@ -401,7 +401,6 @@ getSymbols("SH")
 setSymbolLookup(ZS=list(name="600036.ss",src="yahoo",from = "2015-01-01",
                         to = Sys.time()))    ## 招商银行
 getSymbols("ZS")
-
 setSymbolLookup(MT=list(name="600519.ss",src="yahoo",from = "2015-01-01",
                         to = Sys.time()))   ## 贵州茅台
 getSymbols("MT")
@@ -469,11 +468,12 @@ length(SH_w);length(XF_w)  # 查看数据长度
 xfmodel <- lm(XF_w ~ SH_w)
 summary(xfmodel)
 
+## 仿照招商银行的命令，做出科大讯飞的单指数图
 
 ########### VaR（Value at Risk）值计算 ############
 
+##### 招商银行
 ## ① delta method：方差-协方差法
-# 招商银行
 mu_zs <- mean(ZS_ret)
 sigma_zs <- sd(ZS_ret)
 VaR1.zs_95 <- mu_zs-qnorm(0.05)*sigma_zs ;VaR1.zs_95   # 95%置信水平
@@ -487,11 +487,25 @@ xfit<-seq(min(ZS_ret),max(ZS_ret),length=100)
 yfit<-dnorm(xfit,mean(ZS_ret),sd(ZS_ret))
 lines(xfit,yfit,col="blue",lwd=3,lty=2)
 
-abline(v=-VaR1.zs_95,col="green",lwd=3)
-abline(v= VaR1.zs_95,col="green",lwd=3)
+## 画出VaR位置
+abline(v=-VaR1.zs_95,col="green",lwd=3)   # for long position
+abline(v= VaR1.zs_95,col="green",lwd=3)   # for short position
 
 abline(v= -VaR1.zs_99,col=6,lwd=3)
 abline(v=  VaR1.zs_99,col=6,lwd=3)
+
+### ② 历史模拟法
+VaR2.zs_95 <- -quantile(ZS_ret, 0.05) ; VaR2.zs_95
+VaR2.zs_99 <- -quantile(ZS_ret, 0.01) ; VaR2.zs_99
+
+### ③ 蒙特卡洛模拟法
+MC_zs<-rnorm(100000,mu_zs,sigma_zs)    # 假设服从正态分布
+VaR3.zs_95 <- -quantile(MC_zs, 0.05) ; VaR3.zs_95  
+VaR3.zs_99 <- -quantile(MC_zs, 0.01) ; VaR3.zs_99 
+
+## 比较三种方法的计算结果
+cbind(VaR1.zs_95,VaR2.zs_95,VaR3.zs_95)  # 95%置信水平
+cbind(VaR1.zs_99,VaR2.zs_99,VaR3.zs_99)  # 99%置信水平
 
 ### 计算兆易创新的VaR
 mu_zy <- mean(ZY_ret)
@@ -500,7 +514,7 @@ VaR1.zy_95 <- mu_zy-qnorm(0.05)*sigma_zy ;VaR1.zy_95   # 95%置信水平
 VaR1.zy_99 <- mu_zy-qnorm(0.01)*sigma_zy ;VaR1.zy_99   # 99%置信水平
 
 hist(ZY_ret,col="lightblue",breaks = 20,probability = T,ylim=c(0,0.2),main = "兆易创新收益直方图")
-lines(density(ZS_ret),col="red",lwd=5)
+lines(density(ZY_ret),col="red",lwd=3)
 
 ### 添加正态分布
 xfit<-seq(min(ZY_ret),max(ZY_ret),length=100)
@@ -514,20 +528,14 @@ abline(v= -VaR1.zy_99,col=6,lwd=3)
 abline(v=  VaR1.zy_99,col=6,lwd=3)
 
 ### ② 历史模拟法
-## 招商银行的VaR
-VaR2.zs_95 <- -quantile(ZS_ret, 0.05) ; VaR2.zs_95
-VaR2.zs_99 <- -quantile(ZS_ret, 0.01) ; VaR2.zs_99
-
-## 兆易创新的VaR 
 VaR2.zy_95 <- -quantile(ZY_ret, 0.05) ; VaR2.zy_95
 VaR2.zy_95 <- -quantile(ZY_ret, 0.01) ; VaR2.zy_95
 
 ### ③ 蒙特卡洛模拟法
-## 招商银行的VaR
-MC_zs<-rnorm(100000,mu_zs,sigma_zs)    # 假设服从正态分布
-VaR3.zs_95 <- -quantile(MC_zs, 0.05) ; VaR3.zs_95  
-VaR3.zs_99 <- -quantile(MC_zs, 0.01) ; VaR3.zs_99 
+MC_zs<-rnorm(100000,mu_zy,sigma_zy)    # 假设服从正态分布
+VaR3.zy_95 <- -quantile(MC_zy, 0.05) ; VaR3.zy_95  
+VaR3.zy_99 <- -quantile(MC_zy, 0.01) ; VaR3.zy_99 
 
 ## 比较三种方法的计算结果
-cbind(VaR1.zs_95,VaR2.zs_95,VaR3.zs_95)  # 95%置信水平
-cbind(VaR1.zs_99,VaR2.zs_99,VaR3.zs_99)  # 99%置信水平
+cbind(VaR1.zy_95,VaR2.zy_95,VaR3.zy_95)  # 95%置信水平
+cbind(VaR1.zy_99,VaR2.zy_99,VaR3.zy_99)  # 99%置信水平
