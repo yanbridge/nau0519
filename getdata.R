@@ -571,3 +571,88 @@ for (i in 1:NReps){
   if(i == 1) plot(x,SPaths[i,],"l", ylim=c(20,150),col =sample(colno,1))
   if (i != 1) lines(x,SPaths[i,],ylim=c(20,150),col =sample(colno,1))
  }
+
+
+################### 4月21日教学 #####################
+library(quantmod)
+library(rugarch)
+library(tseries)
+
+load("stock7.RData")   
+
+SH_ret <- dailyReturn(SH)*100
+ZS_ret <- dailyReturn(ZS)*100
+MT_ret <- dailyReturn(MT)*100
+XF_ret <- dailyReturn(XF)*100
+GL_ret <- dailyReturn(GL)*100
+BD_ret <- dailyReturn(BD)*100
+ZY_ret <- dailyReturn(ZY)*100
+
+## 自相关图
+acf(ZS_ret)
+acf(MT_ret)
+acf(ZY_ret)
+
+## 偏相关图
+pacf(ZS_ret)
+pacf(MT_ret)
+pacf(ZY_ret)
+
+## 单位根检验
+adf.test(ZS_ret)
+adf.test(MT_ret)
+
+## ARCH效应检验
+## FinTS程序包里有ArchTest函数，可以先安装FinTS包。
+ArchTest<-function (x, lags = 12, demean = FALSE) 
+{
+        xName <- deparse(substitute(x))
+        x <- as.vector(x)
+        if (demean) 
+                x <- scale(x, center = TRUE, scale = FALSE)
+        lags <- lags + 1
+        mat <- stats::embed(x^2, lags)
+        arch.lm <- summary(stats::lm(mat[, 1] ~ mat[, -1]))
+        STATISTIC <- arch.lm$r.squared * length(stats::resid(arch.lm))
+        names(STATISTIC) <- "Chi-squared"
+        PARAMETER <- lags - 1
+        names(PARAMETER) <- "df"
+        PVAL <- stats::pchisq(STATISTIC, df = PARAMETER, lower.tail = FALSE)
+        METHOD <- paste("ARCH LM-test; ", "Null hypothesis:  no ARCH effects")
+        result <- list(statistic = STATISTIC, parameter = PARAMETER, 
+                       p.value = PVAL, method = METHOD, data.name = xName)
+        class(result) <- "htest"
+        return(result)
+}
+
+ArchTest(MT_ret)      # 贵州茅台的ARCH效应检验
+
+
+
+#### GARCH model
+spec = ugarchspec(mean.model = list(armaOrder = c(0,0)),
+                  variance.model = list(garchOrder = c(1,1),
+                                        model = "sGARCH"), distribution.model = "snorm")    
+#distribution:snorm,std,sstd,ged,sged,nig,ghyp,sju
+#model = eGARCH,fGARCH,gjrGARCH,apARCH,iGARCH and csGARCH
+#if model = "fGARCH", then submodel can change to TGARCH, AVGARCH, #NGARCH,APARCH,GJRGARCH and ALLGARCH  
+fit_mt <- ugarchfit(data = MT_ret, spec = spec)
+show(fit_mt)
+
+### 计算动态VaR
+sigma_mt <- sigma(fit_mt)
+mu_mt <- mean(MT_ret)
+VaR_mt <- mu_mt-qnorm(0.05)*sigma_mt
+plot(MT_ret,col="blue",lwd=1)
+lines(-VaR_mt,col="red",lwd=3)
+lines(VaR_mt,col="purple",lwd=3)
+
+## 回测检验
+T<-length(MT_ret)
+Number1<--VaR_mt-MT_ret
+N1<-length(Number1[Number1>0])  # 对于多头
+N1/T
+
+Number2<-VaR_mt-MT_ret
+N2<-length(Number2[Number2<0])  # 对于空头
+N2/T
