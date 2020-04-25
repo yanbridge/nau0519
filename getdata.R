@@ -23,16 +23,16 @@ chartSeries(JD,theme="white",TA=NULL)   # 默认K线风格为欧美式
 chartSeries(JD,up.col='red',dn.col='green',
             theme="white",TA=NULL,subset="2020")   #画出京东2020年以来的中国式K线图
 
-## 下载中国股票数据
+## 下载国内股票数据
 setSymbolLookup(招商银行=list(name="600036.ss",src="yahoo",from = "1990-01-01",
                           to = Sys.Date()))  
 getSymbols("招商银行")
 chartSeries(招商银行,up.col='red',dn.col='green',theme="white") #中国式K线图
 
 setSymbolLookup(SH=list(name="000001.ss",src="yahoo",from = "2000-01-01",
-                          to = Sys.Date()))  
-getSymbols("SH")
-chartSeries(WK,up.col='red',dn.col='green',theme="white") #中国式K线图
+                          to = Sys.Date()))     
+getSymbols("SH")                # 上海综合指数
+chartSeries(SH,up.col='red',dn.col='green',theme="white") #中国式K线图
 
 dreturn.sh <- dailyReturn(SH)
 chartSeries(dreturn.sh)
@@ -137,7 +137,7 @@ chartSeries(ZSbank1,up.col="red",dn.col="green",theme="white")
 write.csv(ZSbank,file="ZSbank.csv")   # 保存后没有时间
 write.csv(JD,file="JD.csv") 
 
-write.csv(data.frame(ZSbank),file="ZSbank1.csv")
+write.csv(data.frame(ZSbank),file="ZSbank1.csv")  # 有时间
 
 ############# 常见指数代码 ############################
 #上海股市数据: 600000.ss, 深圳股市数据：000001.sz
@@ -202,10 +202,10 @@ getSymbols("^GSPC",from="2015-01-01")
 getSymbols("AAPL",from="2015-01-01")
 
 setSymbolLookup(SH=list(name="000001.ss",src="yahoo",from = "2015-01-01"))  
-getSymbols("SH")
+getSymbols("SH")       # 上海综合指数
 
 setSymbolLookup(MT=list(name="600519.ss",src="yahoo",from = "2015-01-01"))  
-getSymbols("MT")
+getSymbols("MT")       # 贵州茅台
 
 addSMA(n = 10, on = 1, with.col = Cl, overlay = TRUE, col = "brown") #简单移动平均线,n=5,10,20,30,60,250
 addEMA(n = 10, wilder = FALSE, ratio=NULL, on = 1,with.col = Cl, overlay = TRUE, col = "blue")
@@ -215,7 +215,7 @@ addMACD()     # 加MACD线
 addBBands()   # 布林线指标
 addRSI()      # 相对强弱RSI指标
 
-# 下载6只股票数据
+# 下载美国6只股票数据
 getSymbols(c("AAPL","AMZN","DIS","MSFT","GS","NKE"),from="2015-01-01")
 
 # 计算6只股票收益率
@@ -230,6 +230,8 @@ NKE_ret <- dailyReturn(NKE)
 data_ret <- merge(AAPL_ret,AMZN_ret,DIS_ret,MSFT_ret,GS_ret,NKE_ret)
 colnames(data_ret)<-c("AAPL","AMZN","DIS","MSFT","GS","NKE")
 data_ret<-as.timeSeries(data_ret)
+
+# 6只股票有效前沿
 frontier_us<-portfolioFrontier(data_ret)
 frontier_us
 plot(frontier_us)
@@ -275,6 +277,10 @@ GL_ret <- dailyReturn(GL)
 
 data.ret <- merge(ZS_ret,ZX_ret,PA_ret,MT_ret,HR_ret,XF_ret,GL_ret)
 colnames(data.ret)<-c("ZS","ZX","PA","MT","HR","XF","GL")
+data.ret<-as.timeSeries(data.ret)
+
+# 有效前沿
+data.ret<-as.timeSeries(data.ret)
 data.ret<-as.timeSeries(data.ret)
 frontier_ch<-portfolioFrontier(data.ret)
 frontier_ch
@@ -604,6 +610,7 @@ adf.test(MT_ret)
 
 ## ARCH效应检验
 ## FinTS程序包里有ArchTest函数，可以先安装FinTS包。
+## 如果不想安装FinTS，可运行下面的小程序
 ArchTest<-function (x, lags = 12, demean = FALSE) 
 {
         xName <- deparse(substitute(x))
@@ -639,7 +646,7 @@ spec = ugarchspec(mean.model = list(armaOrder = c(0,0)),
 fit_mt <- ugarchfit(data = MT_ret, spec = spec)
 show(fit_mt)
 
-### 计算动态VaR
+### 计算动态VaR并画出图
 sigma_mt <- sigma(fit_mt)
 mu_mt <- mean(MT_ret)
 VaR_mt <- mu_mt-qnorm(0.05)*sigma_mt
