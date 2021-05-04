@@ -1,0 +1,22 @@
+### Suggested order of R scripts for Chapter 10
+
+10_Counterparty_credit_risk_IRS.R
+   Illustration of counterparty credit risk in an interest-rate swap
+10_Markov_chains.R
+   Simulation and estimation of continuous-time Markov chains
+10_Merton_model.R
+   Illustration of asset value paths in Merton’s model and paths for the value of the firm's debt
+10_Merton_implied_credit_spreads.R
+   Calculation of credit spreads implied by Merton’s model
+10_DD_for_RadioShack.R
+   Illustration of calculation of distance-to-default for RadioShack based on Merton model
+10_Rating_embedding.R
+   Illustration of the embedding of default and migration probabilities in a firm-value framework
+10_Hazard_rate_model_spreads.R
+   Calculation of credit spreads in hazard rate models under RT and RF recovery models
+10_CDS_calibration.R
+   Illustration of the calibration of hazard rate when one CDS spread is available
+10_Simulating_BM.R
+   Simulating Brownian motion, Brownian bridge and geometric Brownian motion
+10_Doubly_stochastic_default_time_and_CIR.R
+   Illustration for doubly stochastic random times using the CIR model
